@@ -285,7 +285,6 @@ namespace ContainerShip
             if (WeightShip.WeightLeft > WeightShip.WeightRight)
             {
                 difference = WeightShip.WeightLeft - WeightShip.WeightRight;
-
             }
             else
             {
