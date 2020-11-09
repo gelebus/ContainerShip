@@ -16,9 +16,7 @@ namespace ContainerShip
             Width = width;
         }
         public int MaxWeight { get; private set; }
-        public int WeightLeft { get; set; }
-        public int WeightRight { get; set; }
-        public int WeightTotal { get; set; }
+        public WeightShip WeightShip { get; set; }
         
         private int Length;
         private int Width;
@@ -49,9 +47,7 @@ namespace ContainerShip
             HorizontalRows = new List<HorizontalRow>();
             ContainersLeft = new List<Container>();
 
-            WeightLeft = 0;
-            WeightRight = 0;
-            WeightTotal = 0;
+            WeightShip = new WeightShip();
 
             ValuablePrio = true;
 
@@ -147,13 +143,13 @@ namespace ContainerShip
                 {
                     return;
                 }
-                if (WeightRight > WeightLeft)
+                if (WeightShip.WeightRight > WeightShip.WeightLeft)
                 {
-                    HorizontalRows[i].SwitchPlacementVerticalRow(this, Placement.Right, Placement.Left);
+                    WeightShip = HorizontalRows[i].SwitchPlacementVerticalRow(WeightShip, Placement.Right, Placement.Left);
                 }
                 else
                 {
-                    HorizontalRows[i].SwitchPlacementVerticalRow(this, Placement.Left, Placement.Right);
+                    WeightShip = HorizontalRows[i].SwitchPlacementVerticalRow(WeightShip, Placement.Left, Placement.Right);
                 }
             }
         }
@@ -175,7 +171,7 @@ namespace ContainerShip
             int containerNumber = 0;
             int verticalRowNumber = 0;
             Placement placement;
-            if (WeightLeft > WeightRight)
+            if (WeightShip.WeightLeft > WeightShip.WeightRight)
             {
                 placement = Placement.Left;
             }
@@ -197,14 +193,14 @@ namespace ContainerShip
             }
             ContainersLeft.Add(highestWeightContainer);
             HorizontalRows[0].VerticalRows[verticalRowNumber].CurrentWeight -= highestWeightContainer.Weight;
-            WeightTotal -= highestWeightContainer.Weight;
+            WeightShip.WeightTotal -= highestWeightContainer.Weight;
             if (placement == Placement.Left)
             {
-                WeightLeft -= highestWeightContainer.Weight;
+                WeightShip.WeightLeft -= highestWeightContainer.Weight;
             }
             else
             {
-                WeightRight -= highestWeightContainer.Weight;
+                WeightShip.WeightRight -= highestWeightContainer.Weight;
             }
             HorizontalRows[0].VerticalRows[verticalRowNumber].Containers.Remove(HorizontalRows[0].VerticalRows[verticalRowNumber].Containers[containerNumber]);
         }
@@ -220,13 +216,13 @@ namespace ContainerShip
                         HorizontalRows[i + 1].VerticalRows[a].CurrentWeight -= HorizontalRows[i + 1].VerticalRows[a].Containers[HorizontalRows[i + 1].VerticalRows[a].Containers.Count - 1].Weight;
                         if (HorizontalRows[i + 1].VerticalRows[a].Placement == Placement.Right)
                         {
-                            WeightRight -= HorizontalRows[i + 1].VerticalRows[a].Containers[HorizontalRows[i + 1].VerticalRows[a].Containers.Count - 1].Weight;
+                            WeightShip.WeightRight -= HorizontalRows[i + 1].VerticalRows[a].Containers[HorizontalRows[i + 1].VerticalRows[a].Containers.Count - 1].Weight;
                         }
                         else if (HorizontalRows[i + 1].VerticalRows[a].Placement == Placement.Left)
                         {
-                            WeightLeft -= HorizontalRows[i + 1].VerticalRows[a].Containers[HorizontalRows[i + 1].VerticalRows[a].Containers.Count - 1].Weight;
+                            WeightShip.WeightLeft -= HorizontalRows[i + 1].VerticalRows[a].Containers[HorizontalRows[i + 1].VerticalRows[a].Containers.Count - 1].Weight;
                         }
-                        WeightTotal -= HorizontalRows[i + 1].VerticalRows[a].Containers[HorizontalRows[i + 1].VerticalRows[a].Containers.Count - 1].Weight;
+                        WeightShip.WeightTotal -= HorizontalRows[i + 1].VerticalRows[a].Containers[HorizontalRows[i + 1].VerticalRows[a].Containers.Count - 1].Weight;
                         HorizontalRows[i + 1].VerticalRows[a].Containers.Remove(HorizontalRows[i + 1].VerticalRows[a].Containers[HorizontalRows[i + 1].VerticalRows[a].Containers.Count - 1]);
                         a--;
                     }
@@ -286,16 +282,16 @@ namespace ContainerShip
         private bool WeightCorrectionNeeded()
         {
             int difference;
-            if (WeightLeft > WeightRight)
+            if (WeightShip.WeightLeft > WeightShip.WeightRight)
             {
-                difference = WeightLeft - WeightRight;
+                difference = WeightShip.WeightLeft - WeightShip.WeightRight;
 
             }
             else
             {
-                difference = WeightRight - WeightLeft;
+                difference = WeightShip.WeightRight - WeightShip.WeightLeft;
             }
-            if (difference > 0.2f * WeightTotal)
+            if (difference > 0.2f * WeightShip.WeightTotal)
             {
                 return true;
             }
@@ -309,17 +305,17 @@ namespace ContainerShip
                 {
                     if (HorizontalRows[i].VerticalRows[a].Placement == Placement.Left)
                     {
-                        WeightLeft += HorizontalRows[i].VerticalRows[a].CurrentWeight;
-                        WeightTotal += HorizontalRows[i].VerticalRows[a].CurrentWeight;
+                        WeightShip.WeightLeft += HorizontalRows[i].VerticalRows[a].CurrentWeight;
+                        WeightShip.WeightTotal += HorizontalRows[i].VerticalRows[a].CurrentWeight;
                     }
                     else if (HorizontalRows[i].VerticalRows[a].Placement == Placement.Right)
                     {
-                        WeightRight += HorizontalRows[i].VerticalRows[a].CurrentWeight;
-                        WeightTotal += HorizontalRows[i].VerticalRows[a].CurrentWeight;
+                        WeightShip.WeightRight += HorizontalRows[i].VerticalRows[a].CurrentWeight;
+                        WeightShip.WeightTotal += HorizontalRows[i].VerticalRows[a].CurrentWeight;
                     }
                     else
                     {
-                        WeightTotal += HorizontalRows[i].VerticalRows[a].CurrentWeight;
+                        WeightShip.WeightTotal += HorizontalRows[i].VerticalRows[a].CurrentWeight;
                     }
                 }
             }
@@ -327,7 +323,7 @@ namespace ContainerShip
 
         public override string ToString()
         {
-            string shipString = $"Ship (WeightLeft:{WeightLeft}) (WeightRight: {WeightRight}) (TotalWeight: {WeightTotal})" + Environment.NewLine;
+            string shipString = $"Ship (WeightLeft:{WeightShip.WeightLeft}) (WeightRight: {WeightShip.WeightRight}) (TotalWeight: {WeightShip.WeightTotal})" + Environment.NewLine;
             for (int i = 0; i < HorizontalRows.Count; i++)
             {
                 int Number = i + 1;

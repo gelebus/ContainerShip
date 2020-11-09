@@ -64,9 +64,8 @@ namespace ContainerShip
         }
         public void AddContainer(List<Container> containers, bool cooledAllowed, bool cooledPresent)
         {
-            if (!IsContainerPossible())
+            if (!ContainerPossible)
             {
-                ContainerPossible = false;
                 return;
             }
             if (cooledAllowed && cooledPresent)

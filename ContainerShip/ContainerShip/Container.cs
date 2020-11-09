@@ -13,12 +13,9 @@ namespace ContainerShip
             Weight = weight;
             Valuable = valuable;
             Cooled = cooled;
-            AbleToFit = true;
         }
 
         public int ContainerId;
-        public bool Used { get; set; }
-        public bool AbleToFit { get; set; }
         public int Weight { get; private set; }
         public bool Valuable { get; private set; }
         public bool Cooled { get; private set; }

@@ -8,10 +8,10 @@ namespace ContainerShip
 {
     public class HorizontalRow
     {
-        public HorizontalRow(int availableSpots)
+        public HorizontalRow(int NumberOfVerticalRows)
         {
             VerticalRows = new List<VerticalRow>();
-            for (int i = 0; i < availableSpots; i++)
+            for (int i = 0; i < NumberOfVerticalRows; i++)
             {
                 VerticalRows.Add(new VerticalRow());
             }
@@ -23,7 +23,7 @@ namespace ContainerShip
         public bool CooledRow { get; set; }
 
         private int Number = 1;
-        public void SwitchPlacementVerticalRow(Ship ship, Placement from, Placement to)
+        public WeightShip SwitchPlacementVerticalRow(WeightShip weightShip, Placement from, Placement to)
         {
             VerticalRow switchRow;
             int currentWeightFrom = 0;
@@ -44,28 +44,32 @@ namespace ContainerShip
                     currentWeightTo = VerticalRows[i].CurrentWeight;
                 }
             }
-            if (from == Placement.Right)
-            {
-                ship.WeightRight -= VerticalRows[numberFrom].CurrentWeight;
-                ship.WeightLeft += VerticalRows[numberFrom].CurrentWeight;
-
-                ship.WeightRight += VerticalRows[numberTo].CurrentWeight;
-                ship.WeightLeft -= VerticalRows[numberTo].CurrentWeight;
-            }
-            else
-            {
-                ship.WeightRight += VerticalRows[numberFrom].CurrentWeight;
-                ship.WeightLeft -= VerticalRows[numberFrom].CurrentWeight;
-
-                ship.WeightRight -= VerticalRows[numberTo].CurrentWeight;
-                ship.WeightLeft += VerticalRows[numberTo].CurrentWeight;
-            }
+            weightShip = CurrentWeightAdjustments(weightShip, from, numberFrom, numberTo);
 
             switchRow = VerticalRows[numberFrom];
             VerticalRows[numberFrom] = VerticalRows[numberTo];
             VerticalRows[numberFrom].Placement = from;
             VerticalRows[numberTo] = switchRow;
             VerticalRows[numberTo].Placement = to;
+
+            return weightShip;
+        }
+
+        private WeightShip CurrentWeightAdjustments(WeightShip weightShip, Placement from, int numberFrom, int numberTo)
+        {
+            if(from == Placement.Left)
+            {
+                int switchNumber = numberFrom;
+                numberFrom = numberTo;
+                numberTo = switchNumber;
+            }
+            weightShip.WeightRight -= VerticalRows[numberFrom].CurrentWeight;
+            weightShip.WeightLeft += VerticalRows[numberFrom].CurrentWeight;
+
+            weightShip.WeightRight += VerticalRows[numberTo].CurrentWeight;
+            weightShip.WeightLeft -= VerticalRows[numberTo].CurrentWeight;
+
+            return weightShip;
         }
         private void SetVerticalRowPlacements()
         {
