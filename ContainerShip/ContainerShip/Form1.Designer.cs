@@ -237,6 +237,7 @@
             this.btAddContainer.TabIndex = 21;
             this.btAddContainer.Text = "Add Container";
             this.btAddContainer.UseVisualStyleBackColor = true;
+            this.btAddContainer.Click += new System.EventHandler(this.btAddContainer_Click);
             // 
             // btSort
             // 
@@ -246,6 +247,7 @@
             this.btSort.TabIndex = 22;
             this.btSort.Text = "Sort Containers";
             this.btSort.UseVisualStyleBackColor = true;
+            this.btSort.Click += new System.EventHandler(this.btSort_Click);
             // 
             // Form1
             // 

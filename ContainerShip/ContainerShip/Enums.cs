@@ -1,0 +1,1 @@
+﻿public enum Placement { Left,Middle,Right}
