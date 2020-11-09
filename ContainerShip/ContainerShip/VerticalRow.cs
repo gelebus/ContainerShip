@@ -99,6 +99,8 @@ namespace ContainerShip
             containers.Remove(containers[i]);
         }
 
+        //to do: make one method to add a container and delete the rest || make a getContainer class and a was to disable the container in the list
+
         public override string ToString()
         {
             string VerticalRowString = $"VerticalRow ({Placement}) (Weight: {CurrentWeight})";
