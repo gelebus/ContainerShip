@@ -21,7 +21,7 @@ namespace ContainerShip
         public Placement Placement { get; set; }
         public List<Container> Containers { get; private set; }
 
-        public void UpdateCurrentWeight()
+        private void UpdateCurrentWeight()
         {
             CurrentWeight = 0;
             for (int i = 0; i < Containers.Count; i++)

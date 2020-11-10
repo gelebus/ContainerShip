@@ -163,10 +163,6 @@ namespace ContainerShip
         {
             for (int i = 0; i < HorizontalRows.Count; i++)
             {
-                if (!WeightCorrectionNeeded())
-                {
-                    return;
-                }
                 if (WeightShip.WeightRight > WeightShip.WeightLeft)
                 {
                     WeightShip = HorizontalRows[i].SwitchPlacementVerticalRow(WeightShip, Placement.Right, Placement.Left);

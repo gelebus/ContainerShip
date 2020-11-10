@@ -49,8 +49,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HorizontalRowTests.cs" />
     <Compile Include="ShipTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VerticalRowTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

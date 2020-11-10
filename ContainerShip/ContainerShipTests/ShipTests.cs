@@ -84,6 +84,22 @@ namespace ContainerShipTests
             Assert.AreEqual(expected, ship.WeightShip.WeightTotal);
         }
         [TestMethod]
+        public void SecondBothWeightChecksTestWithADifferentShip()
+        {
+            containers.Add(new Container(1, false, false));
+            containers.Add(new Container(1, false, false));
+            containers.Add(new Container(1, false, false));
+            containers.Add(new Container(1, false, false));
+            containers.Add(new Container(1, false, false));
+            containers.Add(new Container(10000, false, false));
+            ship = new Ship(containers, 500000, 15, 7);
+            int expected = 5;
+
+            ship.Sort();
+
+            Assert.AreEqual(expected, ship.WeightShip.WeightTotal);
+        }
+        [TestMethod]
         public void ValuableAccesibilityTest()
         {
             containers.Add(new Container(4000, true, false));
