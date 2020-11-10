@@ -65,7 +65,6 @@ namespace ContainerShip
                 }
             }
             LbContainers.Items.Clear();
-
         }
     }
 }

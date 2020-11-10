@@ -70,71 +70,95 @@ namespace ContainerShip
         {
             for (int HorizontalRowCounter = 0; HorizontalRowCounter < HorizontalRows.Count; HorizontalRowCounter++)
             {
-                for (int VerticalRowCounter = 0; VerticalRowCounter < HorizontalRows[HorizontalRowCounter].VerticalRows.Count; VerticalRowCounter++)
-                {
-                    if (ValuablePrio)
-                    {
-                        VerticalRowCounter = SortValuableContainers(HorizontalRowCounter, VerticalRowCounter);
-                    }
-                    else
-                    {
-                        if (HorizontalRowCounter == 0)
-                        {
-                            HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(Containers, true, ContainerPresent(true, false));
-                        }
-                        else
-                        {
-                            HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(Containers, false, ContainerPresent(true, false));
-                        }
-                    }
-                    if (HorizontalRowCounter == HorizontalRows.Count - 1 && VerticalRowCounter == HorizontalRows[HorizontalRowCounter].VerticalRows.Count - 1 && Containers.Count > 0 && VerticalRowPossibleAdition())
-                    {
-                        ValuablePrio = false;
-                        HorizontalRowCounter = 0;
-                        VerticalRowCounter = -1;
-                    }
-                    if (!VerticalRowPossibleAdition())
-                    {
-                        RemoveAllContainersWithTheseFeatures(false, false);
-                    }
-                    if (!CooledAdditionPossible())
-                    {
-                        RemoveAllContainersWithTheseFeatures(false, true);
-                    }
-                }
+                HorizontalRowCounter = SortContainerChecks(HorizontalRowCounter);
             }
         }
-
-        private int SortValuableContainers(int HorizontalrowCounter, int VerticalrowCounter)
+        private int SortContainerChecks(int HorizontalRowCounter)
         {
-            if (ContainerPresent(false, true) || ContainerPresent(true, true))
+            for (int VerticalRowCounter = 0; VerticalRowCounter < HorizontalRows[HorizontalRowCounter].VerticalRows.Count; VerticalRowCounter++)
             {
-                if (HorizontalrowCounter != 0 && ContainerPresent(true, true))
+                if (ValuablePrio)
                 {
-                    RemoveAllContainersWithTheseFeatures(true, true);
-                    VerticalrowCounter--;
-                }
-                else if (HorizontalrowCounter == 0)
-                {
-                    HorizontalRows[HorizontalrowCounter].VerticalRows[VerticalrowCounter].AddValuableContainer(Containers, true, ContainerPresent(true, true));
+                    VerticalRowCounter = SortValuableContainers(HorizontalRowCounter, VerticalRowCounter);
                 }
                 else
                 {
-                    HorizontalRows[HorizontalrowCounter].VerticalRows[VerticalrowCounter].AddValuableContainer(Containers, false, ContainerPresent(true, true));
+                    SortRegularAndCooledContainers(HorizontalRowCounter, VerticalRowCounter);
+                }
+                if (HorizontalRowCounter == HorizontalRows.Count - 1 && VerticalRowCounter == HorizontalRows[HorizontalRowCounter].VerticalRows.Count - 1 && Containers.Count > 0 && VerticalRowPossibleAdition())
+                {
+                    ValuablePrio = false;
+                    return -1;
+                }
+                if (!VerticalRowPossibleAdition())
+                {
+                    RemoveAllContainersWithTheseFeatures(false, false);
+                }
+                if (!CooledAdditionPossible())
+                {
+                    RemoveAllContainersWithTheseFeatures(false, true);
+                }
+            }
+            return HorizontalRowCounter;
+        }
+        private int SortValuableContainers(int HorizontalRowCounter, int VerticalRowCounter)
+        {
+            if (ContainerPresent(false, true) || ContainerPresent(true, true))
+            {
+                if (HorizontalRowCounter != 0 && ContainerPresent(true, true))
+                {
+                    RemoveAllContainersWithTheseFeatures(true, true);
+                    VerticalRowCounter--;
+                }
+                else if (HorizontalRowCounter == 0)
+                {
+                    if(HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(GetContainer(true,true)) == false)
+                    {
+                        HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(GetContainer(false, true));
+                        Containers.Remove(GetContainer(false, true));
+                    }
+                    else
+                    {
+                        Containers.Remove(GetContainer(true, true));
+                    }
+                }
+                else
+                {
+                    HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(GetContainer(false,true));
+                    Containers.Remove(GetContainer(false, true));
                 }
             }
             else
             {
                 ValuablePrio = false;
-                VerticalrowCounter--;
+                VerticalRowCounter--;
             }
-            if (HorizontalrowCounter == HorizontalRows.Count - 1 && VerticalrowCounter == HorizontalRows[HorizontalrowCounter].VerticalRows.Count - 1 && ContainerPresent(false, true))
+            if (HorizontalRowCounter == HorizontalRows.Count - 1 && VerticalRowCounter == HorizontalRows[HorizontalRowCounter].VerticalRows.Count - 1 && ContainerPresent(false, true))
             {
                 RemoveAllContainersWithTheseFeatures(true, false);
             }
-            return VerticalrowCounter;
+            return VerticalRowCounter;
         }
-
+        private void SortRegularAndCooledContainers(int HorizontalRowCounter, int VerticalRowCounter)
+        {
+            if (HorizontalRowCounter == 0)
+            {
+                if (HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(GetContainer(true, false)) == false)
+                {
+                    HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(GetContainer(false, false));
+                    Containers.Remove(GetContainer(false, false));
+                }
+                else
+                {
+                    Containers.Remove(GetContainer(true, false));
+                }
+            }
+            else
+            {
+                HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(GetContainer(false, false));
+                Containers.Remove(GetContainer(false, false));
+            }
+        }
         private void WeightDistributionCorrection()
         {
             for (int i = 0; i < HorizontalRows.Count; i++)
@@ -155,13 +179,13 @@ namespace ContainerShip
         }
         private void RemoveAllContainersWithTheseFeatures(bool valuable, bool cooled)
         {
-            for (int b = 0; b < Containers.Count; b++)
+            for (int i = 0; i < Containers.Count; i++)
             {
-                if (Containers[b].Cooled == cooled && Containers[b].Valuable == valuable)
+                if (Containers[i].Cooled == cooled && Containers[i].Valuable == valuable)
                 {
-                    ContainersLeft.Add(Containers[b]);
-                    Containers.Remove(Containers[b]);
-                    b = -1;
+                    ContainersLeft.Add(Containers[i]);
+                    Containers.Remove(Containers[i]);
+                    i = -1;
                 }
             }
         }
@@ -278,6 +302,17 @@ namespace ContainerShip
                 }
             }
             return false;
+        }
+        private Container GetContainer(bool cooled, bool valuable)
+        {
+            for (int i = 0; i < Containers.Count; i++)
+            {
+                if(Containers[i].Cooled == cooled && Containers[i].Valuable == valuable)
+                {
+                    return Containers[i];
+                }
+            }
+            return null;
         }
         private bool WeightCorrectionNeeded()
         {

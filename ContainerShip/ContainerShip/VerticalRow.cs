@@ -37,70 +37,17 @@ namespace ContainerShip
             }
             return true;
         }
-        public void AddValuableContainer(List<Container> containers, bool cooledAllowed, bool cooledAndValuablePresent)
+        public bool AddContainer(Container container)
         {
-            if (cooledAllowed && cooledAndValuablePresent)
+            if(container == null)
             {
-                for (int i = 0; i < containers.Count; i++)
-                {
-                    if (containers[i].Valuable && containers[i].Cooled)
-                    {
-                        AddContainerToList(containers, i);
-                        return;
-                    }
-                }
+                return false;
             }
-            else
-            {
-                for (int i = 0; i < containers.Count; i++)
-                {
-                    if (containers[i].Valuable)
-                    {
-                        AddContainerToList(containers, i);
-                        return;
-                    }
-                }
-            }
-        }
-        public void AddContainer(List<Container> containers, bool cooledAllowed, bool cooledPresent)
-        {
-            if (!ContainerPossible)
-            {
-                return;
-            }
-            if (cooledAllowed && cooledPresent)
-            {
-                for (int i = 0; i < containers.Count; i++)
-                {
-                    if (containers[i].Cooled)
-                    {
-                        AddContainerToList(containers, i);
-                        return;
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < containers.Count; i++)
-                {
-                    if (!containers[i].Cooled)
-                    {
-                        AddContainerToList(containers, i);
-                        return;
-                    }
-                }
-            }
-        }
-        private void AddContainerToList(List<Container> containers, int i)
-        {
-            Containers.Add(containers[i]);
+            Containers.Add(container);
             UpdateCurrentWeight();
             ContainerPossible = IsContainerPossible();
-            containers.Remove(containers[i]);
+            return true;
         }
-
-        //to do: make one method to add a container and delete the rest || make a getContainer class and a was to disable the container in the list
-
         public override string ToString()
         {
             string VerticalRowString = $"VerticalRow ({Placement}) (Weight: {CurrentWeight})";
