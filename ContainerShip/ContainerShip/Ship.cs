@@ -25,6 +25,7 @@ namespace ContainerShip
         private List<HorizontalRow> HorizontalRows;
 
         public List<Container> ContainersLeft { get; private set; }
+
         private bool ValuablePrio;
 
         public void Sort()
@@ -331,22 +332,26 @@ namespace ContainerShip
         {
             for (int i = 0; i < HorizontalRows.Count; i++)
             {
-                for (int a = 0; a < HorizontalRows[i].VerticalRows.Count; a++)
+                AddWeight(i);
+            }
+        }
+        private void AddWeight(int HorizontalRowCounter)
+        {
+            for (int i = 0; i < HorizontalRows[HorizontalRowCounter].VerticalRows.Count; i++)
+            {
+                if (HorizontalRows[HorizontalRowCounter].VerticalRows[i].Placement == Placement.Left)
                 {
-                    if (HorizontalRows[i].VerticalRows[a].Placement == Placement.Left)
-                    {
-                        WeightShip.WeightLeft += HorizontalRows[i].VerticalRows[a].CurrentWeight;
-                        WeightShip.WeightTotal += HorizontalRows[i].VerticalRows[a].CurrentWeight;
-                    }
-                    else if (HorizontalRows[i].VerticalRows[a].Placement == Placement.Right)
-                    {
-                        WeightShip.WeightRight += HorizontalRows[i].VerticalRows[a].CurrentWeight;
-                        WeightShip.WeightTotal += HorizontalRows[i].VerticalRows[a].CurrentWeight;
-                    }
-                    else
-                    {
-                        WeightShip.WeightTotal += HorizontalRows[i].VerticalRows[a].CurrentWeight;
-                    }
+                    WeightShip.WeightLeft += HorizontalRows[HorizontalRowCounter].VerticalRows[i].CurrentWeight;
+                    WeightShip.WeightTotal += HorizontalRows[HorizontalRowCounter].VerticalRows[i].CurrentWeight;
+                }
+                else if (HorizontalRows[HorizontalRowCounter].VerticalRows[i].Placement == Placement.Right)
+                {
+                    WeightShip.WeightRight += HorizontalRows[HorizontalRowCounter].VerticalRows[i].CurrentWeight;
+                    WeightShip.WeightTotal += HorizontalRows[HorizontalRowCounter].VerticalRows[i].CurrentWeight;
+                }
+                else
+                {
+                    WeightShip.WeightTotal += HorizontalRows[HorizontalRowCounter].VerticalRows[i].CurrentWeight;
                 }
             }
         }

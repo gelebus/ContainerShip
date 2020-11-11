@@ -73,8 +73,8 @@ namespace ContainerShip
         }
         private void SetVerticalRowPlacements()
         {
-            double half = VerticalRows.Count / 2;
-            if (Math.Floor(half) == half)
+            double half = (double)VerticalRows.Count / 2;
+            if (Math.Ceiling(half) == half)
             {
                 for (int i = (int)half; i < VerticalRows.Count; i++)
                 {
