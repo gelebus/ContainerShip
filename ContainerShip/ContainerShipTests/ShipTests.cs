@@ -113,5 +113,25 @@ namespace ContainerShipTests
 
             Assert.AreEqual(expected, ship.WeightShip.WeightTotal);
         }
+        [TestMethod]
+        public void SecondValuableAccesibilityTest()
+        {
+            containers.Add(new Container(4000, true, true));
+            containers.Add(new Container(4000, true, true));
+            containers.Add(new Container(4000, true, true));
+            containers.Add(new Container(4000, true, true));
+            containers.Add(new Container(4000, true, false));
+            containers.Add(new Container(4000, true, false));
+            containers.Add(new Container(4000, true, false));
+            containers.Add(new Container(4000, true, false));
+            containers.Add(new Container(4000, true, false));
+            containers.Add(new Container(4000, true, false));
+            ship = new Ship(containers, 500000, 37, 7);
+            int expected = 4;
+
+            ship.Sort();
+
+            Assert.AreEqual(expected, ship.ContainersLeft.Count);
+        }
     }
 }

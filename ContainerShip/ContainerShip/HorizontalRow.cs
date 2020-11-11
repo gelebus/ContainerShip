@@ -15,12 +15,10 @@ namespace ContainerShip
             {
                 VerticalRows.Add(new VerticalRow());
             }
-            CooledRow = false;
             SetVerticalRowPlacements();
         }
 
         public List<VerticalRow> VerticalRows { get; private set; }
-        public bool CooledRow { get; set; }
 
         private int Number = 1;
         public WeightShip SwitchPlacementVerticalRow(WeightShip weightShip, Placement from, Placement to)
