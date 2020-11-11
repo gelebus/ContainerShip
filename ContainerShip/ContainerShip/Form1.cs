@@ -47,11 +47,11 @@ namespace ContainerShip
             }
             Ship ship = new Ship(containers,weightShip, lengthShip, widthShip);
             ship.Sort();
-            //if(ship.MaxWeight/2 > ship.WeightTotal)
+            if(ship.MaxWeight/2 > ship.WeightShip.WeightTotal)
             {
-                //    MessageBox.Show("De boot kapseist, omdat het totaalgewicht minder dan 50% van het maximale gewicht is.");
+                MessageBox.Show("De boot kapseist, omdat het totaalgewicht minder dan 50% van het maximale gewicht is.");
             }
-            // else
+            else
             {
                 MessageBox.Show(Convert.ToString(ship));
                 if (ship.ContainersLeft.Count >= 1)
