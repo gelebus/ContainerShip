@@ -36,12 +36,12 @@ namespace ContainerShip
             AddWeightToPlacements();
             if (WeightCorrectionNeeded())
             {
-                WeightDistributionCorrection();
+                ChangeVerticalRowPositionsWeightCorrection();
             }
             ValuableAccesibilityCorrection();
             if (WeightCorrectionNeeded())
             {
-                SecondWeightCorrection();
+                RemoveHighestWeightContainerWeightCorrection();
             }
         }
         private void Init()
@@ -171,7 +171,7 @@ namespace ContainerShip
                 Containers.Remove(FirstContainerToCheck);
             }
         }
-        private void WeightDistributionCorrection()
+        private void ChangeVerticalRowPositionsWeightCorrection()
         {
             for (int i = 0; i < HorizontalRows.Count; i++)
             {
@@ -197,7 +197,7 @@ namespace ContainerShip
                 }
             }
         }
-        private void SecondWeightCorrection()
+        private void RemoveHighestWeightContainerWeightCorrection()
         {
             Container highestWeightContainer = new Container(0, false, false);
             int containerNumber = 0;
