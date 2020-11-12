@@ -31,16 +31,13 @@ namespace ContainerShip
 
             for (int i = 0; i < VerticalRows.Count; i++)
             {
-                if (VerticalRows[i].Placement == from && VerticalRows[i].CurrentWeight > currentWeightFrom)
-                {
-                    numberFrom = i;
-                    currentWeightFrom = VerticalRows[i].CurrentWeight;
-                }
-                if (VerticalRows[i].Placement == to && VerticalRows[i].CurrentWeight < currentWeightTo)
-                {
-                    numberTo = i;
-                    currentWeightTo = VerticalRows[i].CurrentWeight;
-                }
+                var valuesFrom = SwitchChecksFrom(i, numberFrom, currentWeightFrom, from);
+                numberFrom = valuesFrom.Item1;
+                currentWeightFrom = valuesFrom.Item2;
+
+                var valuesTo = SwitchChecksTo(i, numberTo, currentWeightTo, to);
+                numberTo = valuesTo.Item1;
+                currentWeightTo = valuesTo.Item2;
             }
             weightShip = CurrentWeightAdjustments(weightShip, from, numberFrom, numberTo);
 
@@ -51,6 +48,25 @@ namespace ContainerShip
             VerticalRows[numberTo].Placement = to;
 
             return weightShip;
+        }
+
+        private (int, int) SwitchChecksFrom(int VerticalRowCounter,int currentNumber, int currentWeight, Placement placement)
+        {
+            if (VerticalRows[VerticalRowCounter].Placement == placement && VerticalRows[VerticalRowCounter].CurrentWeight > currentWeight)
+            {
+                currentNumber = VerticalRowCounter;
+                currentWeight = VerticalRows[VerticalRowCounter].CurrentWeight;
+            }
+            return (currentNumber, currentWeight);
+        }
+        private (int, int) SwitchChecksTo(int VerticalRowCounter, int currentNumber, int currentWeight, Placement placement)
+        {
+            if (VerticalRows[VerticalRowCounter].Placement == placement && VerticalRows[VerticalRowCounter].CurrentWeight < currentWeight)
+            {
+                currentNumber = VerticalRowCounter;
+                currentWeight = VerticalRows[VerticalRowCounter].CurrentWeight;
+            }
+            return (currentNumber, currentWeight);
         }
 
         private WeightShip CurrentWeightAdjustments(WeightShip weightShip, Placement from, int numberFrom, int numberTo)
@@ -74,23 +90,28 @@ namespace ContainerShip
             double half = (double)VerticalRows.Count / 2;
             if (Math.Ceiling(half) == half)
             {
-                for (int i = (int)half; i < VerticalRows.Count; i++)
-                {
-                    VerticalRows[i].Placement = Placement.Right;
-                }
+                SetPossistionsOfVerticalRows(half, true);
             }
             else
             {
-                for (int i = (int)Math.Floor(half); i < VerticalRows.Count; i++)
-                {
-                    VerticalRows[i].Placement = Placement.Right;
-                }
-                VerticalRows[(int)Math.Floor(half)].Placement = Placement.Middle;
+                SetPossistionsOfVerticalRows(half, false);
             }
 
             if (VerticalRows.Count == 1)
             {
                 VerticalRows[0].Placement = Placement.Middle;
+            }
+        }
+
+        private void SetPossistionsOfVerticalRows(double half ,bool even)
+        {
+            for (int i = (int)Math.Floor(half); i < VerticalRows.Count; i++)
+            {
+                VerticalRows[i].Placement = Placement.Right;
+            }
+            if(!even)
+            {
+                VerticalRows[(int)Math.Floor(half)].Placement = Placement.Middle;
             }
         }
 

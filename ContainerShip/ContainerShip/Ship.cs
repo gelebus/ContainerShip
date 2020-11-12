@@ -16,6 +16,7 @@ namespace ContainerShip
             Width = width;
         }
         public int MaxWeight { get; private set; }
+        
         public WeightShip WeightShip { get; set; }
         
         private readonly int Length;
@@ -71,63 +72,51 @@ namespace ContainerShip
         {
             for (int HorizontalRowCounter = 0; HorizontalRowCounter < HorizontalRows.Count; HorizontalRowCounter++)
             {
-                HorizontalRowCounter = SortContainerChecks(HorizontalRowCounter);
+                HorizontalRowCounter = RunSortContainerChecks(HorizontalRowCounter);
             }
         }
-        private int SortContainerChecks(int HorizontalRowCounter)
+        private int RunSortContainerChecks(int HorizontalRowCounter)
         {
             for (int VerticalRowCounter = 0; VerticalRowCounter < HorizontalRows[HorizontalRowCounter].VerticalRows.Count; VerticalRowCounter++)
             {
-                if (ValuablePrio)
-                {
-                    VerticalRowCounter = SortValuableContainers(HorizontalRowCounter, VerticalRowCounter);
-                }
-                else
-                {
-                    SortRegularAndCooledContainers(HorizontalRowCounter, VerticalRowCounter);
-                }
+                var values = SortContainerChecks(HorizontalRowCounter, VerticalRowCounter);
+                HorizontalRowCounter = values.Item1;
+                VerticalRowCounter = values.Item2;
                 if (HorizontalRowCounter == HorizontalRows.Count - 1 && VerticalRowCounter == HorizontalRows[HorizontalRowCounter].VerticalRows.Count - 1 && Containers.Count > 0 && VerticalRowPossibleAdition())
                 {
                     ValuablePrio = false;
                     return -1;
                 }
-                if (!VerticalRowPossibleAdition())
-                {
-                    RemoveAllContainersWithTheseFeatures(false, false);
-                }
-                if (!CooledAdditionPossible())
-                {
-                    RemoveAllContainersWithTheseFeatures(false, true);
-                }
             }
+            
             return HorizontalRowCounter;
+        }
+        private (int, int) SortContainerChecks(int HorizontalRowCounter, int VerticalRowCounter)
+        {
+            if (ValuablePrio)
+            {
+                VerticalRowCounter = SortValuableContainers(HorizontalRowCounter, VerticalRowCounter);
+            }
+            else
+            {
+                SortRegularAndCooledContainers(HorizontalRowCounter, VerticalRowCounter);
+            }
+            
+            if (!VerticalRowPossibleAdition())
+            {
+                RemoveAllContainersWithTheseFeatures(false, false);
+            }
+            if (!CooledAdditionPossible())
+            {
+                RemoveAllContainersWithTheseFeatures(false, true);
+            }
+            return (HorizontalRowCounter, VerticalRowCounter);
         }
         private int SortValuableContainers(int HorizontalRowCounter, int VerticalRowCounter)
         {
             if (ContainerPresent(false, true) || ContainerPresent(true, true))
             {
-                if (HorizontalRowCounter != 0 && ContainerPresent(true, true))
-                {
-                    RemoveAllContainersWithTheseFeatures(true, true);
-                    VerticalRowCounter--;
-                }
-                else if (HorizontalRowCounter == 0)
-                {
-                    if(HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(GetContainer(true,true)) == false)
-                    {
-                        HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(GetContainer(false, true));
-                        Containers.Remove(GetContainer(false, true));
-                    }
-                    else
-                    {
-                        Containers.Remove(GetContainer(true, true));
-                    }
-                }
-                else
-                {
-                    HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(GetContainer(false,true));
-                    Containers.Remove(GetContainer(false, true));
-                }
+                VerticalRowCounter = ValuableContainerChecks(HorizontalRowCounter, VerticalRowCounter);
             }
             else
             {
@@ -140,24 +129,46 @@ namespace ContainerShip
             }
             return VerticalRowCounter;
         }
+        private int ValuableContainerChecks(int HorizontalRowCounter, int VerticalRowCounter)
+        {
+            if (HorizontalRowCounter != 0 && ContainerPresent(true, true))
+            {
+                RemoveAllContainersWithTheseFeatures(true, true);
+                VerticalRowCounter--;
+            }
+            else if (HorizontalRowCounter == 0)
+            {
+                AdditionOfOneOfTheseTwoContainers(GetContainer(true, true), GetContainer(false, true), HorizontalRowCounter, VerticalRowCounter);
+            }
+            else
+            {
+                HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(GetContainer(false, true));
+                Containers.Remove(GetContainer(false, true));
+            }
+            return VerticalRowCounter;
+        }
         private void SortRegularAndCooledContainers(int HorizontalRowCounter, int VerticalRowCounter)
         {
             if (HorizontalRowCounter == 0)
             {
-                if (HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(GetContainer(true, false)) == false)
-                {
-                    HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(GetContainer(false, false));
-                    Containers.Remove(GetContainer(false, false));
-                }
-                else
-                {
-                    Containers.Remove(GetContainer(true, false));
-                }
+                AdditionOfOneOfTheseTwoContainers(GetContainer(true, false), GetContainer(false, false), HorizontalRowCounter, VerticalRowCounter);
             }
             else
             {
                 HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(GetContainer(false, false));
                 Containers.Remove(GetContainer(false, false));
+            }
+        }
+        private void AdditionOfOneOfTheseTwoContainers(Container FirstContainerToCheck, Container SecondContainer, int HorizontalRowCounter, int VerticalRowCounter)
+        {
+            if (HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(FirstContainerToCheck) == false)
+            {
+                HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].AddContainer(SecondContainer);
+                Containers.Remove(SecondContainer);
+            }
+            else
+            {
+                Containers.Remove(FirstContainerToCheck);
             }
         }
         private void WeightDistributionCorrection()
@@ -229,34 +240,43 @@ namespace ContainerShip
         {
             for (int i = 0; i < HorizontalRows.Count; i++)
             {
-                ValuableAccesibilityChecks(i);
+                RunValuableAccesibilityChecks(i);
             }
         }
-        private void ValuableAccesibilityChecks(int HorizontalRowCounter)
+        private void RunValuableAccesibilityChecks(int HorizontalRowCounter)
         {
-            for (int a = 0; a < HorizontalRows[HorizontalRowCounter].VerticalRows.Count; a++)
+            for (int VerticalRowCounter = 0; VerticalRowCounter < HorizontalRows[HorizontalRowCounter].VerticalRows.Count; VerticalRowCounter++)
             {
-                if (!AccesibleFromFrontOrBack(a, HorizontalRowCounter) && HorizontalRows[HorizontalRowCounter].VerticalRows[a].Containers.Count > 0)
-                {
-                    int OtherHorizontalRow = HorizontalRowCounter + 1;
-                    int ContainerNumber = HorizontalRows[OtherHorizontalRow].VerticalRows[a].Containers.Count - 1;
-                    Container Othercontainer = HorizontalRows[OtherHorizontalRow].VerticalRows[a].Containers[ContainerNumber];
-                    
-                    ContainersLeft.Add(Othercontainer);
-                    HorizontalRows[OtherHorizontalRow].VerticalRows[a].CurrentWeight -= Othercontainer.Weight;
-                    if (HorizontalRows[OtherHorizontalRow].VerticalRows[a].Placement == Placement.Right)
-                    {
-                        WeightShip.WeightRight -= Othercontainer.Weight;
-                    }
-                    else if (HorizontalRows[OtherHorizontalRow].VerticalRows[a].Placement == Placement.Left)
-                    {
-                        WeightShip.WeightLeft -= Othercontainer.Weight;
-                    }
-                    WeightShip.WeightTotal -= Othercontainer.Weight;
-                    HorizontalRows[OtherHorizontalRow].VerticalRows[a].Containers.Remove(Othercontainer);
-                    a--;
-                }
+                VerticalRowCounter = ValuableAccesibilityChecks(VerticalRowCounter, HorizontalRowCounter);
             }
+        }
+        private int ValuableAccesibilityChecks(int VerticalRowCounter, int HorizontalRowCounter)
+        {
+            if (!AccesibleFromFrontOrBack(VerticalRowCounter, HorizontalRowCounter) && HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].Containers.Count > 0)
+            {
+                int OtherHorizontalRow = HorizontalRowCounter + 1;
+                int ContainerNumber = HorizontalRows[OtherHorizontalRow].VerticalRows[VerticalRowCounter].Containers.Count - 1;
+                Container Othercontainer = HorizontalRows[OtherHorizontalRow].VerticalRows[VerticalRowCounter].Containers[ContainerNumber];
+
+                ContainersLeft.Add(Othercontainer);
+                HorizontalRows[OtherHorizontalRow].VerticalRows[VerticalRowCounter].CurrentWeight -= Othercontainer.Weight;
+                removeContainerWeightFromShip(Othercontainer,OtherHorizontalRow, VerticalRowCounter);
+                HorizontalRows[OtherHorizontalRow].VerticalRows[VerticalRowCounter].Containers.Remove(Othercontainer);
+                VerticalRowCounter--;
+            }
+            return VerticalRowCounter;
+        }
+        private void removeContainerWeightFromShip(Container container, int HorizontalRowCounter, int VerticalRowCounter)
+        {
+            if (HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].Placement == Placement.Right)
+            {
+                WeightShip.WeightRight -= container.Weight;
+            }
+            else if (HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].Placement == Placement.Left)
+            {
+                WeightShip.WeightLeft -= container.Weight;
+            }
+            WeightShip.WeightTotal -= container.Weight;
         }
         private bool AccesibleFromFrontOrBack(int verticalRowNumber, int horizontalRowNumber)
         {
@@ -286,7 +306,6 @@ namespace ContainerShip
         }
         private bool CooledAdditionPossible()
         {
-
             for (int a = 0; a < HorizontalRows[0].VerticalRows.Count; a++)
             {
                 if (HorizontalRows[0].VerticalRows[a].ContainerPossible)
@@ -294,7 +313,6 @@ namespace ContainerShip
                     return true;
                 }
             }
-
             return false;
         }
         private bool ContainerPresent(bool cooled, bool valuable)
@@ -338,29 +356,33 @@ namespace ContainerShip
         }
         private void AddWeightToPlacements()
         {
-            for (int i = 0; i < HorizontalRows.Count; i++)
+            for (int HorizontalRowCounter = 0; HorizontalRowCounter < HorizontalRows.Count; HorizontalRowCounter++)
             {
-                AddWeight(i);
+                AddWeight(HorizontalRowCounter);
             }
         }
         private void AddWeight(int HorizontalRowCounter)
         {
-            for (int i = 0; i < HorizontalRows[HorizontalRowCounter].VerticalRows.Count; i++)
+            for (int VerticalRowCounter = 0; VerticalRowCounter < HorizontalRows[HorizontalRowCounter].VerticalRows.Count; VerticalRowCounter++)
             {
-                if (HorizontalRows[HorizontalRowCounter].VerticalRows[i].Placement == Placement.Left)
-                {
-                    WeightShip.WeightLeft += HorizontalRows[HorizontalRowCounter].VerticalRows[i].CurrentWeight;
-                    WeightShip.WeightTotal += HorizontalRows[HorizontalRowCounter].VerticalRows[i].CurrentWeight;
-                }
-                else if (HorizontalRows[HorizontalRowCounter].VerticalRows[i].Placement == Placement.Right)
-                {
-                    WeightShip.WeightRight += HorizontalRows[HorizontalRowCounter].VerticalRows[i].CurrentWeight;
-                    WeightShip.WeightTotal += HorizontalRows[HorizontalRowCounter].VerticalRows[i].CurrentWeight;
-                }
-                else
-                {
-                    WeightShip.WeightTotal += HorizontalRows[HorizontalRowCounter].VerticalRows[i].CurrentWeight;
-                }
+                AddWeightChecks(HorizontalRowCounter, VerticalRowCounter);
+            }
+        }
+        private void AddWeightChecks(int HorizontalRowCounter, int VerticalRowCounter)
+        {
+            if (HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].Placement == Placement.Left)
+            {
+                WeightShip.WeightLeft += HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].CurrentWeight;
+                WeightShip.WeightTotal += HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].CurrentWeight;
+            }
+            else if (HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].Placement == Placement.Right)
+            {
+                WeightShip.WeightRight += HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].CurrentWeight;
+                WeightShip.WeightTotal += HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].CurrentWeight;
+            }
+            else
+            {
+                WeightShip.WeightTotal += HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].CurrentWeight;
             }
         }
 
