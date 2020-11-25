@@ -17,7 +17,7 @@ namespace ContainerShipTests
         }
 
         [TestMethod]
-        public void ValuableContainersOnTopTest()
+        public void IsValuableOnTop()
         {
             containers.Add(new Container(30000, true, false));
             containers.Add(new Container(30000, true, false));
@@ -32,7 +32,7 @@ namespace ContainerShipTests
             Assert.AreEqual(expected, ship.ContainersLeft.Count);
         }
         [TestMethod]
-        public void CooledContainersInTheFrontRowTest()
+        public void AreCooledContainersInFront()
         {
             containers.Add(new Container(30000, false, true));
             containers.Add(new Container(30000, false, true));
@@ -53,7 +53,7 @@ namespace ContainerShipTests
             Assert.AreEqual(expected, ship.ContainersLeft.Count);
         }
         [TestMethod]
-        public void ToMuchContainersTest()
+        public void CantTakeToMuchContainers()
         {
             containers.Add(new Container(30000, true, true));
             containers.Add(new Container(30000, true, false));
@@ -70,7 +70,7 @@ namespace ContainerShipTests
             Assert.AreEqual(expected, ship.ContainersLeft.Count);
         }
         [TestMethod]
-        public void BothWeightChecksTest()
+        public void CanWeightBeDistributedCorrectly()
         {
             containers.Add(new Container(1, false, false));
             containers.Add(new Container(1, false, false));
@@ -84,7 +84,7 @@ namespace ContainerShipTests
             Assert.AreEqual(expected, ship.WeightShip.WeightTotal);
         }
         [TestMethod]
-        public void SecondBothWeightChecksTestWithADifferentShip()
+        public void CanWeightBeDistributedCorrectlyWithMultipleRows()
         {
             containers.Add(new Container(1, false, false));
             containers.Add(new Container(1, false, false));
@@ -100,7 +100,7 @@ namespace ContainerShipTests
             Assert.AreEqual(expected, ship.WeightShip.WeightTotal);
         }
         [TestMethod]
-        public void ValuableAccesibilityTest()
+        public void CanAValuableBeAccesibleFromFrontOrBack()
         {
             containers.Add(new Container(4000, true, false));
             containers.Add(new Container(4000, true, false));
@@ -114,7 +114,7 @@ namespace ContainerShipTests
             Assert.AreEqual(expected, ship.WeightShip.WeightTotal);
         }
         [TestMethod]
-        public void SecondValuableAccesibilityTest()
+        public void CanACooledAndValuableAndValuableBeAccesibleFromFrontOrBack()
         {
             containers.Add(new Container(4000, true, true));
             containers.Add(new Container(4000, true, true));

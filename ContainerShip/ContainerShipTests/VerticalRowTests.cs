@@ -39,7 +39,7 @@ namespace ContainerShipTests
         }
 
         [TestMethod]
-        public void IfCurrentWeightGetsAboveOneHundredAndTwentyThousendItsNotPossibleToAddAnotherContainer()
+        public void DisableContainerPossibleAfterLimit()
         {
             verticalRow.AddContainer(new Container(30000, false, false));
             verticalRow.AddContainer(new Container(30000, false, false));

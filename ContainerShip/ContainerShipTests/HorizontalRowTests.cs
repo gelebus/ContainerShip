@@ -18,7 +18,7 @@ namespace ContainerShipTests
             horizontalRow = new HorizontalRow(2);
         }
         [TestMethod]
-        public void CorrectWeightTransfer()
+        public void CorrectWeightTransferFromLeftToRight()
         {
             WeightShip weightShip = new WeightShip();
             weightShip.WeightLeft = 4000;
@@ -32,6 +32,46 @@ namespace ContainerShipTests
             horizontalRow.VerticalRows[1].AddContainer(new Container(30000, false, false));
 
             weightShip = horizontalRow.SwitchPlacementVerticalRow(weightShip, Placement.Left, Placement.Right);
+
+            Assert.AreEqual(expected.WeightLeft, weightShip.WeightLeft);
+            Assert.AreEqual(expected.WeightRight, weightShip.WeightRight);
+            Assert.AreEqual(expected.WeightTotal, weightShip.WeightTotal);
+        }
+        [TestMethod]
+        public void CorrectWeightTransferFromRightToLeft()
+        {
+            WeightShip weightShip = new WeightShip();
+            weightShip.WeightLeft = 30000;
+            weightShip.WeightRight = 4000;
+            weightShip.WeightTotal = 34000;
+            WeightShip expected = new WeightShip();
+            expected.WeightLeft = 4000;
+            expected.WeightRight = 30000;
+            expected.WeightTotal = 34000;
+            horizontalRow.VerticalRows[1].AddContainer(new Container(4000, false, false));
+            horizontalRow.VerticalRows[0].AddContainer(new Container(30000, false, false));
+
+            weightShip = horizontalRow.SwitchPlacementVerticalRow(weightShip, Placement.Right, Placement.Left);
+
+            Assert.AreEqual(expected.WeightLeft, weightShip.WeightLeft);
+            Assert.AreEqual(expected.WeightRight, weightShip.WeightRight);
+            Assert.AreEqual(expected.WeightTotal, weightShip.WeightTotal);
+        }
+        [TestMethod]
+        public void IncorrectWeightTransferStillGivesOkResults()
+        {
+            WeightShip weightShip = new WeightShip();
+            weightShip.WeightLeft = 4000;
+            weightShip.WeightRight = 30000;
+            weightShip.WeightTotal = 34000;
+            WeightShip expected = new WeightShip();
+            expected.WeightLeft = 30000;
+            expected.WeightRight = 4000;
+            expected.WeightTotal = 34000;
+            horizontalRow.VerticalRows[0].AddContainer(new Container(4000, false, false));
+            horizontalRow.VerticalRows[1].AddContainer(new Container(30000, false, false));
+
+            weightShip = horizontalRow.SwitchPlacementVerticalRow(weightShip, Placement.Right, Placement.Left);
 
             Assert.AreEqual(expected.WeightLeft, weightShip.WeightLeft);
             Assert.AreEqual(expected.WeightRight, weightShip.WeightRight);
