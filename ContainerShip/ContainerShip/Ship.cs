@@ -34,6 +34,10 @@ namespace ContainerShip
             Init();
             SortContainers();
             AddWeightToPlacements();
+            if (MaxWeight < WeightShip.WeightTotal)
+            {
+                RemoveContainersThatCantFit();
+            }
             if (WeightCorrectionNeeded())
             {
                 ChangeVerticalRowPositionsWeightCorrection();
@@ -90,6 +94,25 @@ namespace ContainerShip
             }
             
             return HorizontalRowCounter;
+        }
+        private void RemoveContainersThatCantFit()
+        {
+            for (int i = 0; i < HorizontalRows.Count; i++)
+            {
+                var Container = HorizontalRows[i].MaxWeightCorrectionRemoval(MaxWeight, WeightShip);
+                if (Container != null)
+                {
+                    ContainersLeft.Add(Container);
+                }
+                if(MaxWeight < WeightShip.WeightTotal && i == HorizontalRows.Count - 1)
+                {
+                    i = -1;
+                }
+                if(MaxWeight > WeightShip.WeightTotal)
+                {
+                    i = HorizontalRows.Count;
+                }
+            }
         }
         private (int, int) SortContainerChecks(int HorizontalRowCounter, int VerticalRowCounter)
         {
@@ -260,13 +283,13 @@ namespace ContainerShip
 
                 ContainersLeft.Add(Othercontainer);
                 HorizontalRows[OtherHorizontalRow].VerticalRows[VerticalRowCounter].CurrentWeight -= Othercontainer.Weight;
-                removeContainerWeightFromShip(Othercontainer,OtherHorizontalRow, VerticalRowCounter);
+                RemoveContainerWeightFromShip(Othercontainer,OtherHorizontalRow, VerticalRowCounter);
                 HorizontalRows[OtherHorizontalRow].VerticalRows[VerticalRowCounter].Containers.Remove(Othercontainer);
                 VerticalRowCounter--;
             }
             return VerticalRowCounter;
         }
-        private void removeContainerWeightFromShip(Container container, int HorizontalRowCounter, int VerticalRowCounter)
+        private void RemoveContainerWeightFromShip(Container container, int HorizontalRowCounter, int VerticalRowCounter)
         {
             if (HorizontalRows[HorizontalRowCounter].VerticalRows[VerticalRowCounter].Placement == Placement.Right)
             {

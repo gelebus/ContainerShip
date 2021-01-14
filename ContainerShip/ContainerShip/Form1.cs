@@ -22,17 +22,24 @@ namespace ContainerShip
             int weight = Convert.ToInt32(tbContainerWeight.Text);
             bool valuable = false;
             bool cooled = false;
-            if (btCooled.Checked)
+            if(weight >= 4000 && weight <= 30000)
             {
-                cooled = true;
+                if (btCooled.Checked)
+                {
+                    cooled = true;
+                }
+                if (btValuable.Checked)
+                {
+                    valuable = true;
+                }
+                Container container = new Container(weight, valuable, cooled);
+                container.ContainerId = 1 + LbContainers.Items.Count;
+                LbContainers.Items.Add(container);
             }
-            if (btValuable.Checked)
+            else
             {
-                valuable = true;
+                MessageBox.Show("Invalid Container (The Containers weight has to be between 4000 and 30000.)");
             }
-            Container container = new Container(weight, valuable, cooled);
-            container.ContainerId = 1 + LbContainers.Items.Count;
-            LbContainers.Items.Add(container);
         }
 
         private void btSort_Click(object sender, EventArgs e)

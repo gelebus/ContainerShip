@@ -90,11 +90,11 @@ namespace ContainerShip
             double half = (double)VerticalRows.Count / 2;
             if (Math.Ceiling(half) == half)
             {
-                SetPossistionsOfVerticalRows(half, true);
+                SetPositionsOfVerticalRows(half, true);
             }
             else
             {
-                SetPossistionsOfVerticalRows(half, false);
+                SetPositionsOfVerticalRows(half, false);
             }
 
             if (VerticalRows.Count == 1)
@@ -103,7 +103,7 @@ namespace ContainerShip
             }
         }
 
-        private void SetPossistionsOfVerticalRows(double half ,bool even)
+        private void SetPositionsOfVerticalRows(double half ,bool even)
         {
             for (int i = (int)Math.Floor(half); i < VerticalRows.Count; i++)
             {
@@ -113,6 +113,28 @@ namespace ContainerShip
             {
                 VerticalRows[(int)Math.Floor(half)].Placement = Placement.Middle;
             }
+        }
+        public Container MaxWeightCorrectionRemoval(int maxWeight, WeightShip weightShip)
+        {
+            Container removedContainer = null;
+            foreach (var verticalRow in VerticalRows)
+            {
+                if (maxWeight < weightShip.WeightTotal)
+                {
+                    removedContainer = verticalRow.RemoveLastContainer();
+                    if (verticalRow.Placement == Placement.Left)
+                    {
+                        weightShip.WeightLeft -= removedContainer.Weight;
+                    }
+                    else
+                    {
+                        weightShip.WeightRight -= removedContainer.Weight;
+                    }
+                    weightShip.WeightTotal -= removedContainer.Weight;
+                    return removedContainer;
+                }
+            }
+            return removedContainer;
         }
 
         public override string ToString()

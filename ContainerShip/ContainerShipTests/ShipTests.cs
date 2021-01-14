@@ -133,5 +133,27 @@ namespace ContainerShipTests
 
             Assert.AreEqual(expected, ship.ContainersLeft.Count);
         }
+        [TestMethod]
+        public void MaxWeightGetsCorrected()
+        {
+            containers.Add(new Container(30000, false, false));
+            containers.Add(new Container(30000, false, false));
+            containers.Add(new Container(30000, false, false));
+            containers.Add(new Container(30000, false, false));
+            containers.Add(new Container(30000, false, false));
+            containers.Add(new Container(30000, false, false));
+            containers.Add(new Container(30000, false, false));
+            containers.Add(new Container(30000, false, false));
+            containers.Add(new Container(30000, false, false));
+            containers.Add(new Container(30000, false, false));
+            containers.Add(new Container(30000, false, false));
+            containers.Add(new Container(30000, false, false));
+            ship = new Ship(containers, 300000, 25, 5);
+            int expectedWeightTotal = 300000;
+
+            ship.Sort();
+
+            Assert.AreEqual(expectedWeightTotal, ship.WeightShip.WeightTotal);
+        }
     }
 }

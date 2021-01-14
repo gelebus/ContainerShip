@@ -48,6 +48,13 @@ namespace ContainerShip
             ContainerPossible = IsContainerPossible();
             return true;
         }
+        public Container RemoveLastContainer()
+        {
+            Container container = Containers[Containers.Count - 1];
+            Containers.Remove(container);
+            UpdateCurrentWeight();
+            return container;
+        }
         public override string ToString()
         {
             string VerticalRowString = $"VerticalRow ({Placement}) (Weight: {CurrentWeight})";
